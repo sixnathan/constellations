@@ -45,7 +45,7 @@ export default function SetupScreen({ onStart, onRules }) {
             lineHeight: 1.6,
           }}
         >
-          Discover the hidden rule governing valid boards.
+          by sixnathan, inspired by PAIR
         </p>
 
         <div style={{ marginBottom: 28 }}>

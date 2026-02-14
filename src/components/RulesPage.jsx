@@ -34,7 +34,7 @@ export default function RulesPage({ onBack }) {
             marginBottom: 24,
           }}
         >
-          How to Play
+          how to play
         </h1>
 
         <div style={{ color: "#aaa", fontSize: 14, lineHeight: 1.8 }}>
@@ -47,29 +47,29 @@ export default function RulesPage({ onBack }) {
               marginTop: 0,
             }}
           >
-            The Game
+            the game
           </h2>
           <p>
-            You are given a grid and a set of 3 symbols, each with 3 of the same
-            colour types. The grid has a hidden rule. You are also given a set
+            you are given a grid and a set of 3 symbols, each with 3 of the same
+            colour types. the grid has a hidden rule. you are also given a set
             of example grid configurations (i.e. with coloured symbols placed on
             them) and are told whether they are valid or invalid.
           </p>
-          <p style={{ fontWeight: 600, color: "#ccc" }}>What you do:</p>
+          <p style={{ fontWeight: 600, color: "#ccc" }}>what you do:</p>
           <ol style={{ paddingLeft: 20, margin: "4px 0 16px" }}>
-            <li>Look at the starter examples labelled valid or invalid.</li>
+            <li>look at the starter examples labelled valid or invalid.</li>
             <li>
-              Place symbols on the grid and press &lsquo;Test Board&rsquo; to
+              place symbols on the grid and press &lsquo;test board&rsquo; to
               learn whether your configuration is valid or invalid.
             </li>
             <li>
-              Once you think you know the rule, click &lsquo;Finish
-              Experiments&rsquo; and write down what you think the rule is.
+              once you think you know the rule, click &lsquo;finish
+              experiments&rsquo; and write down what you think the rule is.
             </li>
-            <li>Click &lsquo;Reveal Rule&rsquo; to learn what it was.</li>
+            <li>click &lsquo;reveal rule&rsquo; to learn what it was.</li>
           </ol>
           <p>
-            You have a 5-second cooldown between testing boards and a maximum of
+            you have a 5-second cooldown between testing boards and a maximum of
             100 tests.
           </p>
 
@@ -82,25 +82,25 @@ export default function RulesPage({ onBack }) {
               marginTop: 24,
             }}
           >
-            Useful Info
+            useful info
           </h2>
           <p style={{ fontWeight: 600, color: "#ccc", marginBottom: 4 }}>
-            Constraints on the rules:
+            constraints on the rules:
           </p>
           <ul style={{ paddingLeft: 20, margin: "4px 0 16px" }}>
             <li>
-              They depend only on what is on the board: shapes, colours, and
+              they depend only on what is on the board: shapes, colours, and
               relative positions.
             </li>
             <li>
-              They are shift-invariant: you can slide the pattern across the
+              they are shift-invariant: you can slide the pattern across the
               grid without changing its validity.
             </li>
             <li>
-              They are simple and singular: no conjunctions, compound rules, or
+              they are simple and singular: no conjunctions, compound rules, or
               special cases.
             </li>
-            <li>Outside the grid counts as an empty space.</li>
+            <li>outside the grid counts as an empty space.</li>
           </ul>
         </div>
       </div>
