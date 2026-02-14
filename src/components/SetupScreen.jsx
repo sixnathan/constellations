@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TIME_OPTIONS } from "../constants.js";
 
-export default function SetupScreen({ onStart }) {
+export default function SetupScreen({ onStart, onRules }) {
   const [selectedTime, setSelectedTime] = useState(10);
 
   return (
@@ -104,6 +104,24 @@ export default function SetupScreen({ onStart }) {
         >
           Begin
         </button>
+        <div style={{ marginTop: 16 }}>
+          <button
+            onClick={onRules}
+            style={{
+              padding: "8px 20px",
+              fontSize: 12,
+              borderRadius: 4,
+              border: "none",
+              background: "transparent",
+              color: "#555",
+              cursor: "pointer",
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
+            }}
+          >
+            How to play
+          </button>
+        </div>
       </div>
     </div>
   );

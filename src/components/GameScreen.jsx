@@ -14,7 +14,7 @@ import Timer from "./Timer.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 
 const GameScreen = forwardRef(function GameScreen(
-  { rule, initialHistory, timer, onNewGame },
+  { rule, initialHistory, timer, onExit },
   ref,
 ) {
   const [grid, setGrid] = useState(emptyGrid);
@@ -173,7 +173,7 @@ const GameScreen = forwardRef(function GameScreen(
             Tests: {testCount}/{MAX_TESTS}
           </span>
           <button
-            onClick={onNewGame}
+            onClick={onExit}
             style={{
               padding: "4px 12px",
               fontSize: 11,
@@ -184,7 +184,7 @@ const GameScreen = forwardRef(function GameScreen(
               cursor: "pointer",
             }}
           >
-            New Game
+            Exit
           </button>
         </div>
       </div>
