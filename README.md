@@ -26,7 +26,7 @@ you have a 5-second cooldown between testing boards and a maximum of 100 tests.
 
 ## about this version
 
-this was created to practise/train for the pair application. so, there are slight differences between the puzzle they assigned and my version. the guide given to me was fairly comprehensive but left out a few details,  so this game is not necessarily a faithful representation of their puzzle (i haven't completed it yet).
+this was created to practise/train for the pair application. so, there are slight differences between the puzzle they assigned and my version. the guide given before playing was fairly comprehensive but left out a few details,  so this game is not necessarily a faithful representation of their puzzle (i haven't completed it yet).
 
 my version has 4 time modes to vary between: 5, 10, 15, and 20 mins, and you are given one puzzle to solve in that time limit. you click 'finish', write down what you think the rule was, and then click 'reveal rule' to find out if you got it correct.
 
@@ -38,7 +38,7 @@ in the original, you were given a set of three puzzles of increasing difficulty 
 - **(b)** the number of symbols placed for the example configuration.
 - **(c)** the number of examples given to us.
 
-my strategy for solving this meant that (a) did not matter too much, but i made it 6x6 for simplicity.
+my strategy for solving this meant that (a) did not matter too much.
 
 i am not totally sure, but i guess that the rule may be more or less obvious depending on (b), but it is not standard: i.e. more symbols = more obvious, or more symbols could = less obvious. the rule would determine which.
 
@@ -59,4 +59,4 @@ for each puzzle, i need to find the fewest-symbol configuration to demonstrate t
 
 this would be used if it was easier for the board to be valid than invalid. if not, then just swap out valid for invalid in the algo above.
 
-this explanation is quite convoluted, and i don't think this method always works.
+this strategy seems quite convoluted, and probably not optimal.
