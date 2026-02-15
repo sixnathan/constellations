@@ -2,12 +2,14 @@ import { useState, useCallback, useRef } from "react";
 import { RULES, generateExamples } from "./rules/index.js";
 import { cloneGrid } from "./rules/helpers.js";
 import { useTimer } from "./hooks/useTimer.js";
+import { getSolvedRuleIds } from "./stats.js";
 import SetupScreen from "./components/SetupScreen.jsx";
 import GameScreen from "./components/GameScreen.jsx";
 import RulesPage from "./components/RulesPage.jsx";
+import StatsPage from "./components/StatsPage.jsx";
 
 export default function App() {
-  const [page, setPage] = useState("setup"); // setup | rules | game
+  const [page, setPage] = useState("setup"); // setup | rules | stats | game
   const [gameState, setGameState] = useState(null);
   const gameScreenRef = useRef(null);
 
@@ -16,11 +18,23 @@ export default function App() {
   });
 
   const startGame = useCallback(
-    (minutes) => {
+    ({ minutes, gridSize, exampleCount, exampleTypes, density }) => {
       timer.reset(minutes);
 
-      const rule = RULES[Math.floor(Math.random() * RULES.length)];
-      const examples = generateExamples(rule);
+      // filter out already-solved rules
+      const solvedIds = getSolvedRuleIds();
+      let available = RULES.filter((r) => !solvedIds.includes(r.id));
+      if (available.length === 0) {
+        available = RULES; // all solved — cycle back through
+      }
+
+      const rule = available[Math.floor(Math.random() * available.length)];
+      const examples = generateExamples(rule, {
+        gridSize,
+        count: exampleCount,
+        types: exampleTypes,
+        density,
+      });
 
       const initialHistory = [];
       examples.valid.forEach((g) =>
@@ -47,7 +61,7 @@ export default function App() {
         ];
       }
 
-      setGameState({ rule, initialHistory, gameId: Date.now() });
+      setGameState({ rule, initialHistory, gridSize, gameId: Date.now() });
       setPage("game");
       setTimeout(() => timer.start(), 0);
     },
@@ -64,6 +78,10 @@ export default function App() {
     return <RulesPage onBack={() => setPage("setup")} />;
   }
 
+  if (page === "stats") {
+    return <StatsPage onBack={() => setPage("setup")} />;
+  }
+
   if (page === "game" && gameState) {
     return (
       <GameScreen
@@ -71,11 +89,18 @@ export default function App() {
         key={gameState.gameId}
         rule={gameState.rule}
         initialHistory={gameState.initialHistory}
+        gridSize={gameState.gridSize}
         timer={timer}
         onExit={handleExit}
       />
     );
   }
 
-  return <SetupScreen onStart={startGame} onRules={() => setPage("rules")} />;
+  return (
+    <SetupScreen
+      onStart={startGame}
+      onRules={() => setPage("rules")}
+      onStats={() => setPage("stats")}
+    />
+  );
 }

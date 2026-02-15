@@ -1,8 +1,60 @@
 import { useState } from "react";
-import { TIME_OPTIONS } from "../constants.js";
+import {
+  TIME_OPTIONS,
+  GRID_SIZE_OPTIONS,
+  EXAMPLE_COUNT_OPTIONS,
+  EXAMPLE_TYPES,
+  DENSITY_OPTIONS,
+} from "../constants.js";
 
-export default function SetupScreen({ onStart, onRules }) {
+const sectionLabel = {
+  fontSize: 11,
+  textTransform: "uppercase",
+  letterSpacing: "0.08em",
+  color: "#555",
+  display: "block",
+  marginBottom: 10,
+};
+
+function OptionRow({ options, selected, onSelect, format }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        gap: 8,
+        justifyContent: "center",
+        flexWrap: "wrap",
+      }}
+    >
+      {options.map((opt) => (
+        <button
+          key={opt}
+          onClick={() => onSelect(opt)}
+          style={{
+            padding: "8px 16px",
+            fontSize: 13,
+            borderRadius: 4,
+            border: selected === opt ? "1px solid #888" : "1px solid #333",
+            background:
+              selected === opt ? "rgba(255,255,255,0.08)" : "transparent",
+            color: selected === opt ? "#e0e0e0" : "#666",
+            cursor: "pointer",
+            fontWeight: selected === opt ? 600 : 400,
+          }}
+        >
+          {format ? format(opt) : opt}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export default function SetupScreen({ onStart, onRules, onStats }) {
   const [selectedTime, setSelectedTime] = useState(10);
+  const [gridSize, setGridSize] = useState(6);
+  const [exampleCount, setExampleCount] = useState(6);
+  const [exampleTypes, setExampleTypes] = useState("mixed");
+  const [density, setDensity] = useState("moderate");
 
   return (
     <div
@@ -14,7 +66,7 @@ export default function SetupScreen({ onStart, onRules }) {
         justifyContent: "center",
       }}
     >
-      <div style={{ textAlign: "center", maxWidth: 400, padding: 32 }}>
+      <div style={{ textAlign: "center", maxWidth: 440, padding: 32 }}>
         <div
           style={{
             fontSize: 28,
@@ -41,54 +93,70 @@ export default function SetupScreen({ onStart, onRules }) {
           style={{
             fontSize: 13,
             color: "#555",
-            marginBottom: 32,
+            marginBottom: 28,
             lineHeight: 1.6,
           }}
         >
           by sixnathan, inspired by PAIR
         </p>
 
-        <div style={{ marginBottom: 28 }}>
-          <label
-            style={{
-              fontSize: 11,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-              color: "#555",
-              display: "block",
-              marginBottom: 10,
-            }}
-          >
-            Time per puzzle
-          </label>
-          <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-            {TIME_OPTIONS.map((t) => (
-              <button
-                key={t}
-                onClick={() => setSelectedTime(t)}
-                style={{
-                  padding: "8px 20px",
-                  fontSize: 13,
-                  borderRadius: 4,
-                  border:
-                    selectedTime === t ? "1px solid #888" : "1px solid #333",
-                  background:
-                    selectedTime === t
-                      ? "rgba(255,255,255,0.08)"
-                      : "transparent",
-                  color: selectedTime === t ? "#e0e0e0" : "#666",
-                  cursor: "pointer",
-                  fontWeight: selectedTime === t ? 600 : 400,
-                }}
-              >
-                {t} min
-              </button>
-            ))}
-          </div>
+        <div style={{ marginBottom: 20 }}>
+          <label style={sectionLabel}>time per puzzle</label>
+          <OptionRow
+            options={TIME_OPTIONS}
+            selected={selectedTime}
+            onSelect={setSelectedTime}
+            format={(t) => `${t} min`}
+          />
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <label style={sectionLabel}>grid size</label>
+          <OptionRow
+            options={GRID_SIZE_OPTIONS}
+            selected={gridSize}
+            onSelect={setGridSize}
+            format={(s) => `${s}×${s}`}
+          />
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <label style={sectionLabel}>examples</label>
+          <OptionRow
+            options={EXAMPLE_COUNT_OPTIONS}
+            selected={exampleCount}
+            onSelect={setExampleCount}
+          />
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <label style={sectionLabel}>example types</label>
+          <OptionRow
+            options={EXAMPLE_TYPES}
+            selected={exampleTypes}
+            onSelect={setExampleTypes}
+          />
+        </div>
+
+        <div style={{ marginBottom: 24 }}>
+          <label style={sectionLabel}>symbol density</label>
+          <OptionRow
+            options={DENSITY_OPTIONS}
+            selected={density}
+            onSelect={setDensity}
+          />
         </div>
 
         <button
-          onClick={() => onStart(selectedTime)}
+          onClick={() =>
+            onStart({
+              minutes: selectedTime,
+              gridSize,
+              exampleCount,
+              exampleTypes,
+              density,
+            })
+          }
           style={{
             padding: "12px 40px",
             fontSize: 14,
@@ -104,7 +172,14 @@ export default function SetupScreen({ onStart, onRules }) {
         >
           Begin
         </button>
-        <div style={{ marginTop: 16 }}>
+        <div
+          style={{
+            marginTop: 16,
+            display: "flex",
+            gap: 16,
+            justifyContent: "center",
+          }}
+        >
           <button
             onClick={onRules}
             style={{
@@ -119,7 +194,23 @@ export default function SetupScreen({ onStart, onRules }) {
               textUnderlineOffset: 3,
             }}
           >
-            How to play
+            how to play
+          </button>
+          <button
+            onClick={onStats}
+            style={{
+              padding: "8px 20px",
+              fontSize: 12,
+              borderRadius: 4,
+              border: "none",
+              background: "transparent",
+              color: "#555",
+              cursor: "pointer",
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
+            }}
+          >
+            stats
           </button>
         </div>
       </div>

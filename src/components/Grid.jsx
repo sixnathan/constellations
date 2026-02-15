@@ -1,17 +1,20 @@
 import { useState } from "react";
-import { GRID_SIZE, COLOR_HEX, SHAPE_CHAR } from "../constants.js";
+import { COLOR_HEX, SHAPE_CHAR } from "../constants.js";
 
 export default function Grid({ grid, onCellClick, resultBorder, disabled }) {
   const [hoverCell, setHoverCell] = useState(null);
   const borderColor = resultBorder || "#333";
+  const gridSize = grid.length;
+  const cellSize = Math.max(32, Math.min(56, Math.floor(300 / gridSize)));
+  const fontSize = Math.max(16, Math.floor(cellSize * 0.54));
 
   return (
     <div style={{ position: "relative", display: "inline-block" }}>
       <div
         style={{
           display: "inline-grid",
-          gridTemplateColumns: `repeat(${GRID_SIZE}, 48px)`,
-          gridTemplateRows: `repeat(${GRID_SIZE}, 48px)`,
+          gridTemplateColumns: `repeat(${gridSize}, ${cellSize}px)`,
+          gridTemplateRows: `repeat(${gridSize}, ${cellSize}px)`,
           border: `2px solid ${borderColor}`,
           borderRadius: 4,
           background: "#161616",
@@ -28,12 +31,12 @@ export default function Grid({ grid, onCellClick, resultBorder, disabled }) {
                 onMouseEnter={() => setHoverCell([r, c])}
                 onMouseLeave={() => setHoverCell(null)}
                 style={{
-                  width: 48,
-                  height: 48,
+                  width: cellSize,
+                  height: cellSize,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 26,
+                  fontSize,
                   fontWeight: 700,
                   cursor: disabled ? "default" : "pointer",
                   color: cell ? COLOR_HEX[cell.color] : "transparent",
@@ -42,8 +45,8 @@ export default function Grid({ grid, onCellClick, resultBorder, disabled }) {
                     : isHover && !disabled
                       ? "rgba(255,255,255,0.02)"
                       : "transparent",
-                  borderRight: c < GRID_SIZE - 1 ? "1px solid #222" : "none",
-                  borderBottom: r < GRID_SIZE - 1 ? "1px solid #222" : "none",
+                  borderRight: c < gridSize - 1 ? "1px solid #222" : "none",
+                  borderBottom: r < gridSize - 1 ? "1px solid #222" : "none",
                   userSelect: "none",
                   lineHeight: 1,
                 }}

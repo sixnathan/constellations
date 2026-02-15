@@ -7,6 +7,7 @@ import {
 } from "react";
 import { MAX_TESTS } from "../constants.js";
 import { emptyGrid, cloneGrid } from "../rules/helpers.js";
+import { saveGameResult } from "../stats.js";
 import Grid from "./Grid.jsx";
 import Palette from "./Palette.jsx";
 import HistoryPanel from "./HistoryPanel.jsx";
@@ -14,10 +15,10 @@ import Timer from "./Timer.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 
 const GameScreen = forwardRef(function GameScreen(
-  { rule, initialHistory, timer, onExit },
+  { rule, initialHistory, timer, onExit, gridSize },
   ref,
 ) {
-  const [grid, setGrid] = useState(emptyGrid);
+  const [grid, setGrid] = useState(() => emptyGrid(gridSize));
   const [selectedTool, setSelectedTool] = useState(null);
   const [history, setHistory] = useState(initialHistory);
   const [testCount, setTestCount] = useState(0);
@@ -28,10 +29,12 @@ const GameScreen = forwardRef(function GameScreen(
   const [gamePhase, setGamePhase] = useState("experimenting");
   const [playerGuess, setPlayerGuess] = useState("");
   const [ruleRevealed, setRuleRevealed] = useState(false);
+  const [selfAssessment, setSelfAssessment] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const cooldownRef = useRef(null);
   const debounceRef = useRef(false);
+  const startTimeRef = useRef(Date.now());
 
   const isExperimenting = gamePhase === "experimenting";
   const testingDisabled = testCount >= MAX_TESTS;
@@ -92,10 +95,10 @@ const GameScreen = forwardRef(function GameScreen(
   }, [canTest, rule, grid, testCount]);
 
   const clearBoard = useCallback(() => {
-    setGrid(emptyGrid());
+    setGrid(emptyGrid(gridSize));
     setResultBorder(null);
     setResultLabel(null);
-  }, []);
+  }, [gridSize]);
 
   const loadBoard = useCallback((boardGrid) => {
     setGrid(cloneGrid(boardGrid));
@@ -110,6 +113,23 @@ const GameScreen = forwardRef(function GameScreen(
     if (cooldownRef.current) clearInterval(cooldownRef.current);
     setCooldownActive(false);
   }, [timer]);
+
+  const handleSelfAssess = useCallback(
+    (result) => {
+      setSelfAssessment(result);
+      const timeUsed = Math.round((Date.now() - startTimeRef.current) / 1000);
+      saveGameResult({
+        ruleId: rule.id,
+        ruleDescription: rule.description,
+        playerGuess,
+        result,
+        timeUsed,
+        testsUsed: testCount,
+        gridSize,
+      });
+    },
+    [rule, playerGuess, testCount, gridSize],
+  );
 
   useImperativeHandle(ref, () => ({
     onTimeExpired() {
@@ -404,31 +424,135 @@ const GameScreen = forwardRef(function GameScreen(
                   Reveal Rule
                 </button>
               ) : (
-                <div
-                  style={{
-                    padding: "12px 14px",
-                    borderRadius: 4,
-                    background: "rgba(59,130,246,0.06)",
-                    border: "1px solid rgba(59,130,246,0.2)",
-                  }}
-                >
+                <>
                   <div
                     style={{
-                      fontSize: 10,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      color: "rgba(59,130,246,0.5)",
-                      marginBottom: 5,
+                      padding: "12px 14px",
+                      borderRadius: 4,
+                      background: "rgba(59,130,246,0.06)",
+                      border: "1px solid rgba(59,130,246,0.2)",
                     }}
                   >
-                    The Rule
+                    <div
+                      style={{
+                        fontSize: 10,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        color: "rgba(59,130,246,0.5)",
+                        marginBottom: 5,
+                      }}
+                    >
+                      The Rule
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        color: "#3B82F6",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {rule.description}
+                    </div>
                   </div>
-                  <div
-                    style={{ fontSize: 14, color: "#3B82F6", lineHeight: 1.5 }}
-                  >
-                    {rule.description}
-                  </div>
-                </div>
+
+                  {/* Self-Assessment */}
+                  {!selfAssessment ? (
+                    <div>
+                      <div
+                        style={{
+                          fontSize: 10,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                          color: "#555",
+                          marginBottom: 8,
+                        }}
+                      >
+                        how did you do?
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: 8,
+                        }}
+                      >
+                        <button
+                          onClick={() => handleSelfAssess("correct")}
+                          style={{
+                            flex: 1,
+                            padding: "8px 12px",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            borderRadius: 4,
+                            border: "1px solid rgba(22,163,74,0.3)",
+                            background: "rgba(22,163,74,0.06)",
+                            color: "#16A34A",
+                            cursor: "pointer",
+                          }}
+                        >
+                          got it
+                        </button>
+                        <button
+                          onClick={() => handleSelfAssess("partial")}
+                          style={{
+                            flex: 1,
+                            padding: "8px 12px",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            borderRadius: 4,
+                            border: "1px solid rgba(245,158,11,0.3)",
+                            background: "rgba(245,158,11,0.06)",
+                            color: "#F59E0B",
+                            cursor: "pointer",
+                          }}
+                        >
+                          partially
+                        </button>
+                        <button
+                          onClick={() => handleSelfAssess("wrong")}
+                          style={{
+                            flex: 1,
+                            padding: "8px 12px",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            borderRadius: 4,
+                            border: "1px solid rgba(220,38,38,0.3)",
+                            background: "rgba(220,38,38,0.06)",
+                            color: "#DC2626",
+                            cursor: "pointer",
+                          }}
+                        >
+                          missed it
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        padding: "8px 14px",
+                        borderRadius: 4,
+                        background: "rgba(255,255,255,0.03)",
+                        border: "1px solid #222",
+                        fontSize: 12,
+                        color: "#666",
+                      }}
+                    >
+                      result saved:{" "}
+                      <span
+                        style={{
+                          fontWeight: 600,
+                          color:
+                            selfAssessment === "correct"
+                              ? "#16A34A"
+                              : selfAssessment === "partial"
+                                ? "#F59E0B"
+                                : "#DC2626",
+                        }}
+                      >
+                        {selfAssessment}
+                      </span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
