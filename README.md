@@ -26,7 +26,7 @@ you have a 5-second cooldown between testing boards and a maximum of 100 tests.
 
 ## about this version
 
-this was created to practise/train for the pair application. so, there are slight differences between the puzzle they assigned and my version. the guide given to me was fairly comprehensive, and so this game is not necessarily a faithful representation of their puzzle (i haven't completed it yet).
+this was created to practise/train for the pair application. so, there are slight differences between the puzzle they assigned and my version. the guide given to me was fairly comprehensive but left out a few details,  so this game is not necessarily a faithful representation of their puzzle (i haven't completed it yet).
 
 my version has 4 time modes to vary between: 5, 10, 15, and 20 mins, and you are given one puzzle to solve in that time limit. you click 'finish', write down what you think the rule was, and then click 'reveal rule' to find out if you got it correct.
 
@@ -53,10 +53,10 @@ for each puzzle, i need to find the fewest-symbol configuration to demonstrate t
 1. test a clear board.
 2. for a valid board:
    - if board = valid, halve the number of symbols.
-   - if board = valid, return to step 2. if board = invalid, restore half of the symbols you erased, check validity, and see which subsection demonstrated the rule. remove half of the other symbols on the board, while checking validity and repeating this process.
+   - if board = valid, return to step 2. if board = invalid, restore half of the symbols you erased, check validity, and see which subsection toggled the rule. remove half of the other symbols on the board, while checking validity and repeating this process.
 3. when i found the fewest-symbol example of the rule, i'd permute each element to find out what parameters it considered: colours, symbol type, adjacency, alignment in rows/columns, and form a hypothesis on what the rule was.
 4. with the rule, i'd create valid/invalid boards to test. with my final hypothesis, i'd adjust each invalid example board given to us according to the rule and correct them. if they stayed invalid, i'd continue testing.
 
-this would be used if it was easier for the board to be valid than invalid. if not, then just swap out valid for invalid in the above algorithm.
+this would be used if it was easier for the board to be valid than invalid. if not, then just swap out valid for invalid in the algo above.
 
 this explanation is quite convoluted, and i don't think this method always works.
