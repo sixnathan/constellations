@@ -3,14 +3,17 @@ import { RULES, generateExamples } from "./rules/index.js";
 import { cloneGrid } from "./rules/helpers.js";
 import { useTimer } from "./hooks/useTimer.js";
 import { getSolvedRuleIds } from "./stats.js";
+import { isConvexEnabled } from "./lib/convexClient.js";
 import SetupScreen from "./components/SetupScreen.jsx";
 import GameScreen from "./components/GameScreen.jsx";
 import RulesPage from "./components/RulesPage.jsx";
 import StatsPage from "./components/StatsPage.jsx";
+import LeaderboardPage from "./components/LeaderboardPage.jsx";
 
 export default function App() {
-  const [page, setPage] = useState("setup"); // setup | rules | stats | game
+  const [page, setPage] = useState("setup"); // setup | rules | stats | leaderboard | game
   const [gameState, setGameState] = useState(null);
+  const [convexSolvedIds, setConvexSolvedIds] = useState(null);
   const gameScreenRef = useRef(null);
 
   const timer = useTimer(10, () => {
@@ -21,8 +24,11 @@ export default function App() {
     ({ minutes, gridSize, exampleCount, exampleTypes, density }) => {
       timer.reset(minutes);
 
-      // filter out already-solved rules
-      const solvedIds = getSolvedRuleIds();
+      // filter out already-solved rules (merge Convex + localStorage)
+      const localSolved = getSolvedRuleIds();
+      const solvedIds = convexSolvedIds
+        ? [...new Set([...localSolved, ...convexSolvedIds])]
+        : localSolved;
       let available = RULES.filter((r) => !solvedIds.includes(r.id));
       if (available.length === 0) {
         available = RULES; // all solved — cycle back through
@@ -65,7 +71,7 @@ export default function App() {
       setPage("game");
       setTimeout(() => timer.start(), 0);
     },
-    [timer],
+    [timer, convexSolvedIds],
   );
 
   const handleExit = useCallback(() => {
@@ -80,6 +86,10 @@ export default function App() {
 
   if (page === "stats") {
     return <StatsPage onBack={() => setPage("setup")} />;
+  }
+
+  if (page === "leaderboard" && isConvexEnabled) {
+    return <LeaderboardPage onBack={() => setPage("setup")} />;
   }
 
   if (page === "game" && gameState) {
@@ -101,6 +111,8 @@ export default function App() {
       onStart={startGame}
       onRules={() => setPage("rules")}
       onStats={() => setPage("stats")}
+      onLeaderboard={isConvexEnabled ? () => setPage("leaderboard") : null}
+      onConvexSolvedIds={setConvexSolvedIds}
     />
   );
 }

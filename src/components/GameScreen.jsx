@@ -8,6 +8,9 @@ import {
 import { MAX_TESTS } from "../constants.js";
 import { emptyGrid, cloneGrid } from "../rules/helpers.js";
 import { saveGameResult } from "../stats.js";
+import { convex, isConvexEnabled } from "../lib/convexClient.js";
+import { getSessionId } from "../lib/playerId.js";
+import { api } from "../../convex/_generated/api";
 import Grid from "./Grid.jsx";
 import Palette from "./Palette.jsx";
 import HistoryPanel from "./HistoryPanel.jsx";
@@ -127,6 +130,21 @@ const GameScreen = forwardRef(function GameScreen(
         testsUsed: testCount,
         gridSize,
       });
+
+      if (isConvexEnabled && convex) {
+        convex
+          .mutation(api.gameResults.saveResult, {
+            sessionId: getSessionId(),
+            ruleId: rule.id,
+            ruleDescription: rule.description,
+            playerGuess,
+            result,
+            timeUsed,
+            testsUsed: testCount,
+            gridSize,
+          })
+          .catch(() => {});
+      }
     },
     [rule, playerGuess, testCount, gridSize],
   );

@@ -6,6 +6,8 @@ import {
   EXAMPLE_TYPES,
   DENSITY_OPTIONS,
 } from "../constants.js";
+import { isConvexEnabled } from "../lib/convexClient.js";
+import PlayerBadge from "./PlayerBadge.jsx";
 
 const sectionLabel = {
   fontSize: 11,
@@ -49,7 +51,13 @@ function OptionRow({ options, selected, onSelect, format }) {
   );
 }
 
-export default function SetupScreen({ onStart, onRules, onStats }) {
+export default function SetupScreen({
+  onStart,
+  onRules,
+  onStats,
+  onLeaderboard,
+  onConvexSolvedIds,
+}) {
   const [selectedTime, setSelectedTime] = useState(10);
   const [gridSize, setGridSize] = useState(6);
   const [exampleCount, setExampleCount] = useState(6);
@@ -89,16 +97,67 @@ export default function SetupScreen({ onStart, onRules, onStats }) {
         >
           Constellations
         </h1>
-        <p
+        <div
           style={{
-            fontSize: 13,
-            color: "#555",
+            marginTop: 8,
             marginBottom: 28,
-            lineHeight: 1.6,
+            display: "flex",
+            gap: 16,
+            justifyContent: "center",
+            flexWrap: "wrap",
           }}
         >
-          by sixnathan, inspired by PAIR
-        </p>
+          <button
+            onClick={onRules}
+            style={{
+              padding: "8px 20px",
+              fontSize: 18,
+              borderRadius: 4,
+              border: "none",
+              background: "transparent",
+              color: "#555",
+              cursor: "pointer",
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
+            }}
+          >
+            how to play
+          </button>
+          <button
+            onClick={onStats}
+            style={{
+              padding: "8px 20px",
+              fontSize: 18,
+              borderRadius: 4,
+              border: "none",
+              background: "transparent",
+              color: "#555",
+              cursor: "pointer",
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
+            }}
+          >
+            stats
+          </button>
+          {onLeaderboard && (
+            <button
+              onClick={onLeaderboard}
+              style={{
+                padding: "8px 20px",
+                fontSize: 18,
+                borderRadius: 4,
+                border: "none",
+                background: "transparent",
+                color: "#555",
+                cursor: "pointer",
+                textDecoration: "underline",
+                textUnderlineOffset: 3,
+              }}
+            >
+              leaderboard
+            </button>
+          )}
+        </div>
 
         <div style={{ marginBottom: 20 }}>
           <label style={sectionLabel}>time per puzzle</label>
@@ -172,47 +231,23 @@ export default function SetupScreen({ onStart, onRules, onStats }) {
         >
           Begin
         </button>
-        <div
-          style={{
-            marginTop: 16,
-            display: "flex",
-            gap: 16,
-            justifyContent: "center",
-          }}
-        >
-          <button
-            onClick={onRules}
-            style={{
-              padding: "8px 20px",
-              fontSize: 12,
-              borderRadius: 4,
-              border: "none",
-              background: "transparent",
-              color: "#555",
-              cursor: "pointer",
-              textDecoration: "underline",
-              textUnderlineOffset: 3,
-            }}
-          >
-            how to play
-          </button>
-          <button
-            onClick={onStats}
-            style={{
-              padding: "8px 20px",
-              fontSize: 12,
-              borderRadius: 4,
-              border: "none",
-              background: "transparent",
-              color: "#555",
-              cursor: "pointer",
-              textDecoration: "underline",
-              textUnderlineOffset: 3,
-            }}
-          >
-            stats
-          </button>
-        </div>
+        {isConvexEnabled && (
+          <div style={{ marginTop: 20 }}>
+            <PlayerBadge onSolvedIdsChange={onConvexSolvedIds} />
+          </div>
+        )}
+      </div>
+
+      <div
+        style={{
+          position: "fixed",
+          bottom: 16,
+          right: 20,
+          fontSize: 12,
+          color: "#444",
+        }}
+      >
+        by sixnathan, inspired by PAIR
       </div>
     </div>
   );
